@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UNINDRA Shop - All in One</title>
+
+<style>
+/* GLOBAL */
+:root {
+  --bg:#061226;
+  --card:#0f1724;
+  --accent1:#4f77ff;
+  --accent2:#8d75ff;
+  --text:#e6eef8;
+  --muted:#94a3b8;
+}
+
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:linear-gradient(180deg,#061226,#07121b);
+  color:var(--text);
+}
+
+/* hidden pages */
+.page { display:none; padding-bottom:40px; }
+
+/* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px;
+  max-width:1100px; margin:auto;
+}
+.brand { display:flex; align-items:center; gap:12px; }
+.logo{
+  width:50px;height:50px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent1),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  color:#03101f;font-weight:800;font-size:20px;
+}
+nav a{
+  color:#dffbff;
+  margin-left:12px;
+  text-decoration:none;
+  font-weight:700;
+}
+
+/* BUTTON */
+.btn{
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  padding:10px 14px;border-radius:10px;
+  color:#021219;text-decoration:none;font-weight:700;
+}
+
+/* PRODUCT GRID */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:1100px;margin:auto;}
+.card{
+  background:var(--card);
+  padding:16px;border-radius:12px;
+  box-shadow:0 8px 30px rgba(3,6,19,0.6);
+}
+
+/* LOGIN STYLE */
+.login-box{
+  width:360px;background:var(--card);
+  padding:30px;border-radius:12px; margin:auto; margin-top:60px;
+  box-shadow:0 12px 40px rgba(3,6,19,0.6);
+}
+input {
+  width:100%; padding:12px; margin-top:10px;
+  border-radius:8px;border:none;
+}
+button {
+  width:100%; padding:12px; margin-top:12px;
+  border-radius:8px;border:none;cursor:pointer;
+  font-weight:700;
+  background:linear-gradient(90deg,var(--accent1),var(--accent2));
+  color:#021219;
+}
+
+/* TABLE */
+.table{width:100%;border-collapse:collapse;margin-top:16px;}
+.table td, .table th{
+  padding:10px;border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+</style>
+</head>
+<body>
+
+<!-- ===================================================== -->
+<!-- 🌐 NAVBAR -->
+<!-- ===================================================== -->
+<header class="header">
+  <div class="brand">
+    <div class="logo">US</div>
+    <div>
+      <div style="font-weight:800">UNINDRA Shop</div>
+      <div style="font-size:12px;color:var(--muted)">Micro E-Commerce</div>
+    </div>
+  </div>
+  <nav>
+    <a href="#" onclick="showPage('home')">Home</a>
+    <a href="#" onclick="showPage('login')">Login Admin</a>
+    <a href="#" onclick="showPage('dashboard')">Dashboard</a>
+  </nav>
+</header>
+
+
+<!-- ===================================================== -->
+<!-- 🏠 PAGE 1 — HOMEPAGE -->
+<!-- ===================================================== -->
+<section id="home" class="page">
+  <div style="max-width:1100px;margin:auto;padding:20px">
+    <h1>Selamat Datang di UNINDRA Shop</h1>
+    <p style="color:var(--muted)">Toko online untuk kebutuhan mahasiswa dan civitas UNINDRA.</p>
+
+    <h2 style="margin-top:30px">Produk Unggulan</h2>
+
+    <div class="grid" id="productGrid"></div>
+  </div>
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 🔐 PAGE 2 — LOGIN ADMIN -->
+<!-- ===================================================== -->
+<section id="login" class="page">
+  <div class="login-box">
+    <h2 style="text-align:center">Login Admin</h2>
+    <input type="password" id="adminPass" placeholder="Masukkan Password">
+    <button onclick="loginAdmin()">Login</button>
+    <p style="font-size:13px;color:var(--muted);text-align:center;margin-top:10px">
+      Password demo: <b>081291506249</b>
+    </p>
+  </div>
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 📊 PAGE 3 — DASHBOARD ADMIN -->
+<!-- ===================================================== -->
+<section id="dashboard" class="page">
+  <div style="max-width:1100px;margin:auto;padding:20px">
+    <h1>Dashboard Admin</h1>
+
+    <div class="card">
+      <h3>Daftar Produk</h3>
+      <table class="table">
+        <thead>
+          <tr><th>ID</th><th>Nama</th><th>Harga</th><th>Stok</th></tr>
+        </thead>
+        <tbody id="adminProdBody"></tbody>
+      </table>
+
+      <button style="margin-top:14px;background:#ff6b6b;color:#021219" onclick="logoutAdmin()">Logout</button>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================================================== -->
+<!-- 🧠 JAVASCRIPT SISTEM HALAMAN -->
+<!-- ===================================================== -->
+<script>
+// DATA PRODUK
+const products = [
+  {id:1, name:'Jaket UNINDRA', price:150000, stock:12},
+  {id:2, name:'Tas Mahasiswa', price:110000, stock:7},
+  {id:3, name:'Notebook UNINDRA', price:18000, stock:40},
+  {id:4, name:'Stiker Kampus', price:5000, stock:120},
+  {id:5, name:'Tumbler UNINDRA', price:75000, stock:20},
+  {id:6, name:'Topi Kampus', price:45000, stock:15}
+];
+
+function formatRp(n){
+  return "Rp " + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+/* ============================
+   SISTEM PAGE (SPA)
+============================ */
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p => p.style.display='none');
+  document.getElementById(page).style.display = 'block';
+
+  if(page === 'dashboard'){ checkAdmin(); renderDashboard(); }
+  if(page === 'home'){ renderProducts(); }
+}
+
+showPage('home'); // default halaman
+
+
+/* ============================
+   LOGIN ADMIN
+============================ */
+function loginAdmin(){
+  const pass = document.getElementById('adminPass').value;
+  if(pass === '081291506249'){
+    sessionStorage.setItem('admin', 'true');
+    alert("Login berhasil!");
+    showPage('dashboard');
+  } else {
+    alert("Password salah!");
+  }
+}
+
+function logoutAdmin(){
+  sessionStorage.removeItem('admin');
+  alert("Logout berhasil!");
+  showPage('login');
+}
+
+function checkAdmin(){
+  if(!sessionStorage.getItem('admin')){
+    alert("Akses ditolak! Silakan login.");
+    showPage('login');
+    return;
+  }
+}
+
+
+/* ============================
+   RENDER PRODUK
+============================ */
+function renderProducts(){
+  const root = document.getElementById('productGrid');
+  root.innerHTML = "";
+  products.forEach(p=>{
+    const card = document.createElement('div');
+    card.className = "card";
+    card.innerHTML = `
+      <h3>${p.name}</h3>
+      <p style="color:var(--muted)">Harga: ${formatRp(p.price)}</p>
+      <p style="color:var(--muted)">Stok: ${p.stock}</p>
+      <a class="btn" href="https://wa.me/6281291506249?text=Saya ingin beli ${encodeURIComponent(p.name)}">
+        Beli via WhatsApp
+      </a>
+    `;
+    root.appendChild(card);
+  });
+}
+
+
+/* ============================
+   RENDER DASHBOARD
+============================ */
+function renderDashboard(){
+  const body = document.getElementById('adminProdBody');
+  body.innerHTML = "";
+  products.forEach(p=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.id}</td>
+      <td>${p.name}</td>
+      <td>${formatRp(p.price)}</td>
+      <td>${p.stock}</td>
+    `;
+    body.appendChild(tr);
+  });
+}
+</script>
+
+</body>
+</html>
